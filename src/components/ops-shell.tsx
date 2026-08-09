@@ -99,9 +99,10 @@ export function OpsShell({
 }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [expanded, setExpanded] = useState(true);
 
   const nav = (
-    <nav className="flex-1 px-3 py-4 space-y-0.5">
+    <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto thin-scrollbar">
       {items.map((item) => {
         const active = pathname.startsWith(item.href);
         return (
@@ -109,35 +110,40 @@ export function OpsShell({
             key={item.href}
             href={item.href}
             onClick={() => setMobileOpen(false)}
-            className={`flex items-center gap-3 px-3 h-10 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center ${expanded ? 'px-3 justify-start' : 'justify-center'} h-11 rounded-lg text-sm font-medium transition-all ${
               active
-                ? "bg-velvet text-on-velvet"
+                ? "bg-velvet text-on-velvet shadow-sm"
                 : "text-muted hover:text-ink hover:bg-velvet-soft"
             }`}
+            title={!expanded ? item.label : undefined}
           >
             <svg
-              width="17"
-              height="17"
+              width="20"
+              height="20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="1.8"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
               className="shrink-0"
             >
               {ICONS[item.icon]}
             </svg>
-            <span className="flex-1">{item.label}</span>
-            {item.badge ? (
-              <span
-                className={`inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-[11px] font-bold ${
-                  active ? "bg-on-velvet/20 text-on-velvet" : "bg-plum text-on-velvet"
-                }`}
-              >
-                {item.badge}
-              </span>
-            ) : null}
+            {expanded && (
+              <>
+                <span className="flex-1 ml-3 whitespace-nowrap">{item.label}</span>
+                {item.badge ? (
+                  <span
+                    className={`inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-[11px] font-bold ${
+                      active ? "bg-on-velvet text-velvet" : "bg-line text-ink"
+                    }`}
+                  >
+                    {item.badge}
+                  </span>
+                ) : null}
+              </>
+            )}
           </Link>
         );
       })}
@@ -145,65 +151,135 @@ export function OpsShell({
   );
 
   const footer = (
-    <div className="px-4 py-4 border-t border-line">
-      <div className="flex items-center gap-3">
-        <span className="w-9 h-9 rounded-lg bg-velvet text-on-velvet grid place-items-center text-sm font-bold shrink-0">
+    <div className={`px-4 py-4 border-t border-line flex flex-col ${expanded ? '' : 'items-center'}`}>
+      <div className={`flex items-center gap-3 ${expanded ? '' : 'justify-center'}`}>
+        <span className="w-10 h-10 rounded-full bg-velvet text-on-velvet grid place-items-center text-sm font-bold shrink-0">
           {userName.charAt(0)}
         </span>
-        <div className="min-w-0 flex-1">
-          <div className="text-sm font-semibold text-ink truncate">{userName}</div>
-          <div className="text-[11px] text-faint truncate">{orgName}</div>
-        </div>
+        {expanded && (
+          <div className="min-w-0 flex-1">
+            <div className="text-sm font-semibold text-ink truncate">{userName}</div>
+            <div className="text-[11px] text-muted truncate">{orgName}</div>
+          </div>
+        )}
       </div>
       <button
         onClick={() => signOut({ callbackUrl: "/login" })}
-        className="mt-3 w-full h-9 rounded-lg border border-line text-xs font-semibold text-muted hover:text-ink hover:border-velvet/40 transition-colors cursor-pointer"
+        className={`mt-4 w-full h-10 flex items-center justify-center gap-2 rounded-lg border border-line text-xs font-semibold text-muted hover:text-ink hover:bg-line-soft transition-colors cursor-pointer ${expanded ? 'px-3' : 'px-0'}`}
+        title={!expanded ? "Sign out" : undefined}
       >
-        Sign out
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        {expanded && <span>Sign out</span>}
       </button>
     </div>
   );
 
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[240px_1fr]">
+    <div className="min-h-screen lg:flex bg-bg">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex flex-col bg-surface border-r border-line sticky top-0 h-screen">
-        <div className="px-5 pt-6 pb-4 border-b border-line">
-          <div className="font-display text-xl font-bold text-velvet tracking-tight">{brand}</div>
-          <div className="text-[10px] uppercase tracking-[0.2em] text-faint font-semibold mt-0.5">
-            {subtitle}
-          </div>
+      <aside 
+        className={`hidden lg:flex flex-col bg-surface text-ink border-r border-line transition-all duration-300 relative ${expanded ? 'w-[260px]' : 'w-[80px]'}`}
+      >
+        <div className={`px-4 h-[72px] flex items-center border-b border-line relative ${expanded ? 'justify-between' : 'justify-center'}`}>
+          {expanded ? (
+            <div className="min-w-0">
+              <div className="font-display text-xl font-bold tracking-tight truncate flex items-center gap-2">
+                <span className="bg-velvet text-on-velvet w-6 h-6 rounded-md flex items-center justify-center text-sm">✦</span>
+                {brand}
+              </div>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-muted font-semibold mt-0.5 truncate pl-8">
+                {subtitle}
+              </div>
+            </div>
+          ) : (
+            <span className="bg-velvet text-on-velvet w-8 h-8 rounded-md flex items-center justify-center text-lg font-bold shadow-md">✦</span>
+          )}
+
+          {/* Expand/Collapse Toggle */}
+          <button 
+            onClick={() => setExpanded(!expanded)}
+            className="absolute -right-3.5 top-1/2 -translate-y-1/2 w-7 h-7 bg-surface text-ink rounded-full border border-line shadow-sm flex items-center justify-center hover:scale-105 transition-transform z-10"
+            aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              {expanded ? <polyline points="15 18 9 12 15 6" /> : <polyline points="9 18 15 12 9 6" />}
+            </svg>
+          </button>
         </div>
         {nav}
         {footer}
       </aside>
 
       {/* Mobile top bar + drawer */}
-      <div className="no-print lg:hidden relative z-40 bg-surface border-b border-line flex items-center gap-3 px-4 h-14">
+      <div className="lg:hidden relative z-40 bg-surface text-ink border-b border-line flex items-center gap-3 px-4 h-14">
         <button
           onClick={() => setMobileOpen((v) => !v)}
           aria-label="Menu"
           className="w-9 h-9 grid place-items-center rounded-lg hover:bg-velvet-soft cursor-pointer"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             {mobileOpen ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M3 6h18M3 12h18M3 18h18" />}
           </svg>
         </button>
-        <span className="font-display text-lg font-bold text-velvet">{brand}</span>
-        <span className="text-[10px] uppercase tracking-[0.18em] text-faint font-semibold">{subtitle}</span>
+        <span className="font-display text-lg font-bold">{brand}</span>
+        <span className="text-[10px] uppercase tracking-[0.18em] text-muted font-semibold mt-1">{subtitle}</span>
       </div>
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-30 pt-14">
-          <div className="absolute inset-0 bg-black/30" onClick={() => setMobileOpen(false)} />
-          <div className="relative bg-surface border-b border-line shadow-lg animate-slide-down">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
+          <div className="relative bg-surface border-r border-line shadow-lg w-[260px] h-[calc(100vh-56px)] flex flex-col animate-slide-down">
             {nav}
             {footer}
           </div>
         </div>
       )}
 
-      <div className="min-w-0">
-        <main className="px-4 sm:px-8 py-6 sm:py-8 max-w-[1400px] animate-fade-in">{children}</main>
+      {/* Main Content Area */}
+      <div className="flex-1 min-w-0 flex flex-col max-h-screen overflow-y-auto">
+        <main className="flex-1 px-4 sm:px-8 py-6 sm:py-8 max-w-[1400px] w-full mx-auto animate-fade-in flex flex-col gap-6">
+          {/* Universal Header Banner */}
+          <div className="bg-surface rounded-2xl p-8 relative overflow-hidden flex flex-col md:flex-row justify-between text-ink shadow-sm border border-line shrink-0">
+            <div className="relative z-10 max-w-[600px] flex flex-col justify-center">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                Good Morning, {userName.split(" ")[0]}!
+              </h1>
+              <p className="mt-3 text-[15px] text-muted leading-relaxed">
+                Monitor operations, manage organizational assets, and track enterprise-wide activities from your command center.
+              </p>
+              <div className="mt-6 flex items-center gap-2 text-sm text-on-velvet bg-velvet w-fit px-4 py-2 rounded-full font-medium shadow-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+              </div>
+            </div>
+            
+            {/* Decorative graphic */}
+            <div className="hidden md:flex relative z-10 w-[240px] items-center justify-end">
+              <div className="relative w-40 h-28 bg-bg rounded-xl shadow-md flex flex-col gap-3 p-4 opacity-90 transform rotate-[-2deg] border border-line">
+                <div className="w-20 h-3 bg-velvet/40 rounded-full"></div>
+                <div className="w-full h-3 bg-velvet/40 rounded-full"></div>
+                <div className="w-16 h-3 bg-velvet/40 rounded-full"></div>
+                
+                <div className="absolute -right-6 -bottom-6 w-20 h-20 bg-surface rounded-full border-4 border-velvet shadow-lg flex items-center justify-center">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-velvet" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            
+            {/* Subtle background circles */}
+            <div className="absolute -right-20 -top-20 w-[400px] h-[400px] bg-velvet-soft rounded-full blur-3xl pointer-events-none opacity-50"></div>
+          </div>
+          
+          {children}
+        </main>
       </div>
     </div>
   );

@@ -44,28 +44,35 @@ export default async function InventoryPage({
           <div>
             <h1 className="text-2xl font-semibold text-ink">Inventory</h1>
             <p className="text-muted text-sm mt-2 leading-relaxed max-w-2xl">
-              Reserved = committed to open orders. Available = stock − reserved, which is what
-              branches see. Minimum stock is editable inline.
+              Reserved = committed to open orders. Available = stock − reserved, which is what branches
+              see. Minimum stock is editable inline.
             </p>
           </div>
           <ExportButton href="/api/exports/inventory" label="Stock take CSV" />
         </div>
         {/* Summary stat chips */}
         <div className="flex gap-3 mt-4 flex-wrap">
-          <div className="glass-surface rounded-xl px-4 py-2.5 flex items-center gap-2">
-            <span className="text-xs text-faint font-medium uppercase tracking-wider">Products</span>
-            <span className="text-sm font-bold text-ink tabular-nums">{totalCount}</span>
+          <div className="bg-[#eaf5f4] border border-[#32988b]/20 rounded-xl px-4 py-2.5 flex items-center gap-2 animate-scale-in">
+            <span className="text-[#32988b] shrink-0">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M3 9l9-5 9 5v10l-9 5-9-5z" /><path d="M3 9l9 5 9-5M12 14v10" /></svg>
+            </span>
+            <span className="text-[11px] text-[#32988b] font-bold uppercase tracking-wider">Products</span>
+            <span className="text-sm font-bold text-[#32988b] tabular-nums ml-1">{totalCount}</span>
           </div>
           {lowCount > 0 && (
-            <div className="bg-low-soft border border-low/25 rounded-xl px-4 py-2.5 flex items-center gap-2 animate-scale-in">
-              <span className="w-2 h-2 rounded-full bg-low" />
-              <span className="text-xs text-low font-semibold">{lowCount} low</span>
+            <div className="bg-[#f4ebf7] border border-[#9d5eb6]/20 rounded-xl px-4 py-2.5 flex items-center gap-2 animate-scale-in">
+              <span className="text-[#9d5eb6] shrink-0">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></svg>
+              </span>
+              <span className="text-[11px] text-[#9d5eb6] font-bold uppercase tracking-wider">{lowCount} low</span>
             </div>
           )}
           {outCount > 0 && (
-            <div className="bg-out-soft border border-out/25 rounded-xl px-4 py-2.5 flex items-center gap-2 animate-scale-in">
-              <span className="w-2 h-2 rounded-full bg-out animate-pulse-soft" />
-              <span className="text-xs text-out font-semibold">{outCount} out</span>
+            <div className="bg-[#faebe8] border border-[#d65f49]/20 rounded-xl px-4 py-2.5 flex items-center gap-2 animate-scale-in">
+              <span className="text-[#d65f49] shrink-0">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+              </span>
+              <span className="text-[11px] text-[#d65f49] font-bold uppercase tracking-wider">{outCount} out</span>
             </div>
           )}
         </div>

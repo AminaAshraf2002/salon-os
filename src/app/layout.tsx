@@ -1,19 +1,30 @@
 import type { Metadata } from "next";
-import { Marcellus, Inter } from "next/font/google";
+import { Montserrat, Inter, Playfair_Display, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { APP_TITLE } from "@/lib/brand";
 
-const marcellus = Marcellus({
-  variable: "--font-marcellus",
-  weight: "400",
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
   display: "swap",
 });
 
 const inter = Inter({
   variable: "--font-inter",
-  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const bebas = Bebas_Neue({
+  weight: "400",
+  variable: "--font-bebas",
   subsets: ["latin"],
   display: "swap",
 });
@@ -30,8 +41,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${marcellus.variable} ${inter.variable} antialiased font-sans`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${montserrat.variable} ${inter.variable} ${playfair.variable} ${bebas.variable} antialiased font-sans`} suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

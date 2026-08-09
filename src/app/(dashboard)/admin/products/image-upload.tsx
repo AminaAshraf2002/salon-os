@@ -51,7 +51,8 @@ export function ProductImageCell({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={optimizedImage(imageUrl, 96)} alt={name} className="w-full h-full object-contain" />
         ) : (
-          <span className="text-faint text-[10px]">none</span>
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src="/product-placeholder.png" alt={name} className="w-full h-full object-contain grayscale opacity-80" />
         )}
       </div>
       <div className="min-w-0">

@@ -63,21 +63,45 @@ const TONE: Record<NonNullable<Stat["tone"]>, string> = {
   accent: "text-velvet",
 };
 
+const pastelColors = [
+  { bg: '#eaf5f4', text: '#32988b', icon: '#32988b' }, // Pastel Teal
+  { bg: '#ebf3fb', text: '#4889c9', icon: '#4889c9' }, // Pastel Blue
+  { bg: '#f4ebf7', text: '#9d5eb6', icon: '#9d5eb6' }, // Pastel Purple
+  { bg: '#faebe8', text: '#d65f49', icon: '#d65f49' }, // Pastel Orange/Red
+];
+
+const defaultIcons = [
+  <svg key="i1" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 5h18M3 12h18M3 19h12" /></svg>,
+  <svg key="i2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" /></svg>,
+  <svg key="i3" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 9l9-5 9 5v10l-9 5-9-5z" /><path d="M3 9l9 5 9-5M12 14v10" /></svg>,
+  <svg key="i4" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></svg>
+];
+
 /** A compact row of KPI cards — the "at a glance" bar. */
 export function StatGrid({ stats }: { stats: Stat[] }) {
   return (
     <div
-      className="grid gap-2.5 mb-5"
-      style={{ gridTemplateColumns: `repeat(auto-fit, minmax(150px, 1fr))` }}
+      className="grid gap-4 mb-8"
+      style={{ gridTemplateColumns: `repeat(auto-fit, minmax(240px, 1fr))` }}
     >
-      {stats.map((s) => (
-        <div key={s.label} className="bg-surface border border-line rounded-md px-4 py-3">
-          <div className="text-[11px] uppercase tracking-wide text-faint font-medium">{s.label}</div>
-          <div className={`text-2xl font-semibold mt-1 tabular-nums ${TONE[s.tone ?? "default"]}`}>
-            {s.value}
+      {stats.map((s, i) => {
+        const color = pastelColors[i % pastelColors.length];
+        const Icon = defaultIcons[i % defaultIcons.length];
+        
+        return (
+          <div key={s.label} className="bg-white border border-gray-200 rounded-lg p-5 flex items-start justify-between shadow-sm">
+            <div>
+              <p className="text-[13px] text-gray-500 font-medium mb-1 uppercase tracking-wider">{s.label}</p>
+              <div className="flex items-end gap-2 mt-2">
+                <h3 className={`text-xl font-inter tabular-nums ${s.tone && s.tone !== "default" ? TONE[s.tone] : "text-gray-900"}`}>{s.value}</h3>
+              </div>
+            </div>
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ml-4" style={{ backgroundColor: color.bg, color: color.icon }}>
+              {Icon}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

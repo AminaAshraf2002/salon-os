@@ -62,16 +62,18 @@ export function ImportWizard() {
       skipEmptyLines: true,
       complete: (result) => {
         const parsed: ImportRow[] = result.data.map((raw) => {
-          const qtyStr = pick(raw, ["qty", "quantity", "stock"]);
-          const minStr = pick(raw, ["min", "minstock", "min stock"]);
+          const qtyStr = pick(raw, ["qty", "quantity", "stock"]).replace(/,/g, "");
+          const minStr = pick(raw, ["min", "minstock", "min stock"]).replace(/,/g, "");
+          const qty = Number(qtyStr);
+          const min = Number(minStr);
           return {
             sku: pick(raw, ["sku"]).trim(),
             name: pick(raw, ["name", "product", "product name"]).trim(),
-            qty: Number(qtyStr),
+            qty: Number.isFinite(qty) && qtyStr !== "" ? qty : -1,
             brand: pick(raw, ["brand"]).trim() || undefined,
             category: pick(raw, ["category", "section"]).trim() || undefined,
             unit: pick(raw, ["unit"]).trim() || undefined,
-            min: minStr ? Number(minStr) : undefined,
+            min: Number.isFinite(min) && minStr !== "" ? min : undefined,
           };
         });
         setRows(parsed);

@@ -143,34 +143,48 @@
   --color-cta-2-dark: var(--color-cta-2-dark);
   --color-on-cta: var(--color-on-cta);
   --color-price: var(--color-price);
-  --font-display: var(--font-marcellus);
-  --font-sans: var(--font-inter);
+  --font-display: var(--font-montserrat);
+  --font-sans: var(--font-montserrat);
+  --font-inter: var(--font-inter);
 }
 
-/* Storefront = online marketplace look (Amazon/Flipkart family):
-   grey page, white cards, dark header, blue links, yellow CTAs. */
+/* Storefront = elegant salon look matching the procedures screenshot:
+   clean white/beige background, dark text, black accents. */
 .theme-store {
-  --color-bg: #eff1f3;
+  --color-bg: #FAFAF8;
   --color-surface: #ffffff;
   --color-surface-raised: #ffffff;
 
-  --color-ink: #0f1111;
-  --color-muted: #565959;
-  --color-faint: #8b8f92;
+  --color-ink: #333333;
+  --color-muted: #A8A8A8;
+  --color-faint: #d1d1d1;
 
-  --color-line: #e3e6e6;
-  --color-line-soft: #eef0f0;
+  --color-line: #eaeaea;
+  --color-line-soft: #f5f5f5;
 
-  /* Primary = marketplace blue (links, quantity controls, secondary buttons) */
-  --color-velvet: #2874f0;
-  --color-velvet-dark: #1a5fd0;
-  --color-velvet-soft: #e8f0fe;
+  /* Primary = Black */
+  --color-velvet: #1a170f;
+  --color-velvet-dark: #000000;
+  --color-velvet-soft: #f0f0f0;
   --color-on-velvet: #ffffff;
-  --color-plum: #c7511f;         /* review/price-style rust accent */
+  --color-plum: #1a170f;
 
-  --shadow-sm: 0 1px 2px rgba(15, 17, 17, 0.06);
-  --shadow-md: 0 2px 8px rgba(15, 17, 17, 0.10);
-  --shadow-lg: 0 6px 20px rgba(15, 17, 17, 0.12);
+  /* Header override */
+  --color-header: #ffffff;
+  --color-header-accent: #f0f0f0;
+  --color-on-header: #333333;
+
+  /* CTA override (Black) */
+  --color-cta: #1a170f;
+  --color-cta-dark: #000000;
+  --color-cta-2: #1a170f;
+  --color-cta-2-dark: #000000;
+  --color-on-cta: #ffffff;
+  --color-price: #1a170f;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.06);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -302,6 +316,41 @@ textarea:focus-visible {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE TABLE → CARD (mobile)
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 639px) {
+  .responsive-table thead { display: none; }
+  .responsive-table tbody { display: flex; flex-direction: column; gap: 8px; }
+  .responsive-table tr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 16px;
+    padding: 14px 16px;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+  .responsive-table td {
+    padding: 2px 0;
+    border: none;
+  }
+  .responsive-table td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-faint);
+    margin-bottom: 2px;
+  }
+  .responsive-table td.td-full {
+    grid-column: 1 / -1;
   }
 }
 
