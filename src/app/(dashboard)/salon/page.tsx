@@ -41,7 +41,7 @@ export default async function SalonDashboardPage() {
         {/* Card 1: Pastel Teal */}
         <div className="bg-white border border-gray-200 rounded-lg p-5 flex items-start justify-between shadow-sm">
           <div>
-            <p className="text-[13px] text-gray-500 font-medium mb-1 uppercase tracking-wider">Today's Sales</p>
+            <p className="text-[13px] text-gray-500 font-medium mb-1 uppercase tracking-wider">Today&apos;s Sales</p>
             <div className="flex items-end gap-2 mt-2">
               <h3 className="text-3xl font-serif text-gray-900">{formatMoney(salesValue)}</h3>
               <span className="text-xs font-semibold text-[#32988b] mb-1">{salesCount} bills</span>
