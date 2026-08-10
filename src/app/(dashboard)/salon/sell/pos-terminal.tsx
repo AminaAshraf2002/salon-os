@@ -49,6 +49,18 @@ export function PosTerminal({ items }: { items: Sellable[] }) {
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
 
+  // Hide bill panel by default until an item is added
+  const [isBillCollapsed, setIsBillCollapsed] = useState(true);
+
+  const categoryRailRef = useRef<HTMLDivElement>(null);
+
+  function scrollCategories(direction: 'left' | 'right') {
+    if (categoryRailRef.current) {
+      const scrollAmount = 200;
+      categoryRailRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+    }
+  }
+
   const q = search.trim().toLowerCase();
   const shown = items.filter((i) => {
     if (cat !== "All" && i.category !== cat) return false;
@@ -112,7 +124,10 @@ export function PosTerminal({ items }: { items: Sellable[] }) {
       });
     }
   }
-  const add = (productId: string) => setQty(productId, (cart.get(productId) ?? 0) + 1);
+  const add = (productId: string) => {
+    setQty(productId, (cart.get(productId) ?? 0) + 1);
+    setIsBillCollapsed(false); // Automatically show bill when adding an item
+  };
 
   /** Discount is capped at the line's gross so a line can never go negative. */
   function setDiscount(productId: string, cents: number) {
@@ -164,12 +179,21 @@ export function PosTerminal({ items }: { items: Sellable[] }) {
   }
 
   return (
-    <div className="-mx-4 sm:-mx-8 -my-6 sm:-my-8">
-      <div className="lg:grid lg:grid-cols-[1fr_380px] lg:h-[calc(100vh-0px)]">
+    <div className="w-full overflow-x-hidden">
+      <div className={`lg:grid ${isBillCollapsed ? "lg:grid-cols-1" : "lg:grid-cols-[1fr_380px]"} gap-8 transition-all duration-300`}>
         {/* ————— Product picker ————— */}
-        <div className="flex flex-col min-h-0 lg:h-full lg:overflow-hidden px-4 sm:px-8 pt-6">
-          <div className="flex items-baseline justify-between gap-3">
-            <h1 className="text-xl font-semibold">Sell to a customer</h1>
+        <div className="flex flex-col min-h-0 min-w-0">
+          <div className="flex items-center justify-between gap-3 shrink-0">
+            <h1 className="text-xl font-semibold flex items-center">
+              Sell to a customer
+              <button
+                onClick={() => setIsBillCollapsed(!isBillCollapsed)}
+                className="ml-4 text-sm text-velvet hover:bg-velvet/10 w-8 h-8 flex items-center justify-center rounded-full transition-colors focus:outline-none"
+                title={isBillCollapsed ? "Show Bill" : "Expand Products"}
+              >
+                <i className={`fa-solid ${isBillCollapsed ? "fa-compress" : "fa-expand"}`}></i>
+              </button>
+            </h1>
             <span className="text-xs text-faint">{shown.length} product{shown.length === 1 ? "" : "s"}</span>
           </div>
 
@@ -180,28 +204,42 @@ export function PosTerminal({ items }: { items: Sellable[] }) {
             onKeyDown={onSearchKey}
             autoFocus
             placeholder="Search or scan — name, SKU, rack…"
-            className="mt-3 w-full bg-surface border border-line rounded-xl px-4 h-12 text-base text-ink focus:border-velvet outline-none transition-colors"
+            className="mt-3 w-full bg-surface border border-line rounded-xl px-4 h-12 text-base text-ink focus:border-velvet outline-none transition-colors shrink-0"
           />
 
           {/* Category rail — tap to filter fast */}
-          <div className="flex gap-2 mt-3 overflow-x-auto no-scrollbar pb-1 shrink-0">
-            {categories.map((c) => (
-              <button
-                key={c}
-                onClick={() => setCat(c)}
-                className={`shrink-0 h-10 px-4 rounded-full text-sm font-semibold border transition-colors select-none ${
-                  cat === c
-                    ? "bg-velvet text-on-velvet border-velvet"
-                    : "bg-surface border-line text-muted active:bg-velvet-soft"
-                }`}
-              >
-                {c}
-              </button>
-            ))}
+          <div className="relative flex items-center group mt-4 mb-2 pb-2 shrink-0 w-full max-w-[calc(100vw-80px)] lg:max-w-none">
+            <button
+              onClick={() => scrollCategories('left')}
+              className="absolute left-0 z-10 w-12 h-8 -mt-2 bg-gradient-to-r from-surface to-transparent flex items-center justify-start opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <i className="fa-solid fa-chevron-left text-muted hover:text-velvet drop-shadow-md cursor-pointer ml-1"></i>
+            </button>
+            <div ref={categoryRailRef} className="flex items-center gap-6 overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap border-b border-gray-200 w-full px-2 pb-2">
+              {categories.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setCat(c)}
+                  className={`text-[13px] tracking-wider font-semibold transition-colors select-none px-4 py-1.5 rounded-full ${
+                    cat === c
+                      ? "bg-black text-white"
+                      : "text-gray-400 hover:bg-black hover:text-white"
+                  }`}
+                >
+                  {c.toUpperCase()}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => scrollCategories('right')}
+              className="absolute right-0 z-10 w-12 h-8 -mt-2 bg-gradient-to-l from-surface to-transparent flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <i className="fa-solid fa-chevron-right text-muted hover:text-velvet drop-shadow-md cursor-pointer mr-1"></i>
+            </button>
           </div>
 
           {/* Tiles */}
-          <div className="mt-3 pb-28 lg:pb-6 lg:overflow-y-auto grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 auto-rows-min">
+          <div className="mt-3 pb-28 lg:pb-6 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 auto-rows-min content-start">
             {shown.map((p) => {
               const inCart = cart.get(p.productId) ?? 0;
               const soldOut = inCart >= p.onHand;
@@ -210,30 +248,39 @@ export function PosTerminal({ items }: { items: Sellable[] }) {
                   key={p.productId}
                   onClick={() => add(p.productId)}
                   disabled={soldOut}
-                  className={`relative text-left bg-surface border rounded-2xl p-3 min-h-[104px] flex flex-col justify-between transition-all select-none active:scale-[0.97] ${
-                    inCart > 0 ? "border-velvet ring-2 ring-velvet/20" : "border-line active:border-velvet/50"
-                  } ${soldOut ? "opacity-45" : ""}`}
+                  className={`group relative overflow-hidden text-left bg-white border rounded-2xl p-4 min-h-[116px] flex flex-col justify-between transition-all duration-200 select-none hover:-translate-y-1 hover:shadow-lg ${
+                    inCart > 0 ? "border-velvet ring-2 ring-velvet/20 shadow-md" : "border-gray-200 hover:border-velvet/50"
+                  } ${soldOut ? "opacity-45 grayscale" : ""}`}
                 >
                   {inCart > 0 && (
-                    <span className="absolute -top-2 -right-2 min-w-7 h-7 px-2 grid place-items-center rounded-full bg-velvet text-on-velvet text-sm font-bold shadow-md">
+                    <span className="absolute top-2 right-2 min-w-6 h-6 px-1.5 grid place-items-center rounded-full bg-velvet text-on-velvet text-[11px] font-bold shadow-sm z-10 animate-in zoom-in">
                       {inCart}
                     </span>
                   )}
+                  
+                  {/* Hover Add Icon */}
+                  <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-velvet bg-white/90 rounded-full w-8 h-8 flex items-center justify-center shadow-md">
+                     <i className="fa-solid fa-cart-plus"></i>
+                  </div>
+
                   <div>
-                    <div className="font-semibold text-sm leading-tight line-clamp-2">{p.name}</div>
-                    <div className="text-xs text-faint mt-0.5 truncate">
+                    <div className="font-semibold text-sm leading-tight line-clamp-2 pr-6">{p.name}</div>
+                    <div className="text-xs text-faint mt-1.5 truncate flex items-center gap-1.5">
                       {p.rackId ? (
-                        <span className="text-velvet font-semibold">📍 {p.rackId}</span>
+                        <span className="text-velvet font-semibold flex items-center gap-1"><i className="fa-solid fa-location-dot text-[10px]"></i> {p.rackId}</span>
                       ) : (
-                        p.brand
+                        <span className="flex items-center gap-1"><i className="fa-solid fa-tag text-[10px]"></i> {p.brand}</span>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-baseline justify-between mt-2">
-                    <span className="font-bold text-base tabular-nums">{formatMoney(inclusive(p))}</span>
+                  <div className="flex flex-wrap items-end justify-between mt-2 gap-1">
+                    <span className="font-bold text-base tabular-nums text-ink">{formatMoney(inclusive(p))}</span>
                     <span
-                      className={`text-[11px] tabular-nums ${p.onHand <= 3 ? "text-out font-semibold" : "text-faint"}`}
+                      className={`flex items-center whitespace-nowrap shrink-0 text-[11px] font-medium tabular-nums px-2 py-0.5 rounded-md ${
+                        p.onHand <= 3 ? "bg-out/10 text-out" : "bg-surface text-faint"
+                      }`}
                     >
+                      <i className="fa-solid fa-box-open mr-1 opacity-70"></i>
                       {p.onHand} left
                     </span>
                   </div>
@@ -247,28 +294,30 @@ export function PosTerminal({ items }: { items: Sellable[] }) {
         </div>
 
         {/* ————— Bill panel (desktop / tablet) ————— */}
-        <aside className="hidden lg:flex flex-col h-full bg-surface border-l border-line">
-          <BillPanel
-            lines={lines}
-            totals={totals}
-            unitCount={unitCount}
-            setQty={setQty}
-            setDiscount={setDiscount}
-            showCustomer={showCustomer}
-            setShowCustomer={setShowCustomer}
-            customerName={customerName}
-            setCustomerName={setCustomerName}
-            customerPhone={customerPhone}
-            setCustomerPhone={setCustomerPhone}
-            buyerGstin={buyerGstin}
-            setBuyerGstin={setBuyerGstin}
-            paymentMode={paymentMode}
-            setPaymentMode={setPaymentMode}
-            error={error}
-            pending={pending}
-            complete={complete}
-          />
-        </aside>
+        {!isBillCollapsed && (
+          <aside className="hidden lg:flex flex-col h-[calc(100vh-60px)] min-h-[400px] sticky top-4 bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <BillPanel
+              lines={lines}
+              totals={totals}
+              unitCount={unitCount}
+              setQty={setQty}
+              setDiscount={setDiscount}
+              showCustomer={showCustomer}
+              setShowCustomer={setShowCustomer}
+              customerName={customerName}
+              setCustomerName={setCustomerName}
+              customerPhone={customerPhone}
+              setCustomerPhone={setCustomerPhone}
+              buyerGstin={buyerGstin}
+              setBuyerGstin={setBuyerGstin}
+              paymentMode={paymentMode}
+              setPaymentMode={setPaymentMode}
+              error={error}
+              pending={pending}
+              complete={complete}
+            />
+          </aside>
+        )}
       </div>
 
       {/* ————— Mobile: bill as a bottom sheet + sticky charge bar ————— */}

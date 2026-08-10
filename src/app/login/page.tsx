@@ -29,9 +29,17 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex text-ink bg-white antialiased">
+    <div className="min-h-screen flex text-ink bg-white antialiased relative">
+      
+      {/* SVG ClipPath Definition for the Right Panel */}
+      <svg width="0" height="0" className="absolute hidden lg:block">
+        <clipPath id="s-curve-clip" clipPathUnits="objectBoundingBox">
+          <path d="M 0.15,0 C 0.28,0.15 0.28,0.35 0.15,0.5 C 0.02,0.65 0.02,0.85 0.15,1 L 1,1 L 1,0 Z" />
+        </clipPath>
+      </svg>
+
       {/* Left Panel - Form Area */}
-      <div className="w-full lg:w-1/2 flex flex-col relative bg-white h-screen">
+      <div className="w-full lg:w-[50%] flex flex-col relative bg-white h-screen z-10">
         
         {/* Top Logo */}
         <div className="absolute top-4 left-4 md:top-6 md:left-8 z-10">
@@ -39,7 +47,7 @@ export default function LoginPage() {
         </div>
 
         {/* Form Container */}
-        <div className="flex-1 flex flex-col justify-center px-8 sm:px-12 md:px-16 py-8 overflow-y-auto">
+        <div className="flex-1 flex flex-col justify-center px-8 sm:px-12 md:px-16 lg:pl-32 lg:pr-16 py-8 overflow-y-auto">
           <div className="w-full max-w-[400px] mx-auto my-auto mt-32 lg:mt-auto">
             <h1 className="text-4xl text-black tracking-wide" style={{ fontFamily: "var(--font-bebas)" }}>
               Sign in to your salon
@@ -111,28 +119,31 @@ export default function LoginPage() {
       </div>
 
       {/* Right Panel - Image Area */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-gray-100">
+      <div 
+        className="hidden lg:block absolute right-0 top-0 w-[50%] h-full bg-gray-100 z-0"
+        style={{ clipPath: 'url(#s-curve-clip)' }}
+      >
         <div className="absolute inset-0 overflow-hidden">
           <img
-            src="/salon-bg.png"
-            alt="Salon Background"
+            src="/wholesale_bg.png"
+            alt="Wholesale Warehouse Background"
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/10" />
           
-          {/* Partner Access Badge */}
-          <div className="absolute top-8 left-8">
-            <div className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-sm shadow-sm">
+          {/* Partner Access Badge - moved right to avoid curve */}
+          <div className="absolute top-8 left-[28%] xl:left-[25%]">
+            <div className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-sm shadow-sm inline-block">
               <span className="text-[8px] font-bold text-black uppercase tracking-[0.15em]">
                 Storefront · Salon Login
               </span>
             </div>
           </div>
 
-          {/* Quote */}
-          <div className="absolute bottom-10 left-10">
-            <h2 className="text-2xl text-white max-w-[350px] leading-relaxed italic font-light" style={{ fontFamily: "var(--font-playfair)" }}>
-              &quot;Where professional expertise meets elegant botanical wellness.&quot;
+          {/* Quote - moved right to avoid curve */}
+          <div className="absolute bottom-10 left-[28%] xl:left-[25%] pr-8">
+            <h2 className="text-2xl text-white max-w-[400px] leading-relaxed italic font-light drop-shadow-md" style={{ fontFamily: "var(--font-playfair)" }}>
+              &quot;Your premier wholesale partner for professional salon supplies and bulk ordering.&quot;
             </h2>
           </div>
         </div>

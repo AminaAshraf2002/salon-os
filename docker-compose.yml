@@ -1,12 +1,15 @@
-version: "3.9"
 services:
-  web:
-    build: .
+  db:
+    image: postgres:15-alpine
     ports:
-      - "3000:3000"
+      - "5433:5432"
     environment:
-      - NODE_ENV=development
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: salon_os
     volumes:
-      - .:/app
-      - /app/node_modules
-    command: npm run dev
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+

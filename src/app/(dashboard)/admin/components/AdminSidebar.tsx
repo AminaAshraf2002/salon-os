@@ -62,18 +62,7 @@ export function AdminSidebar({
         })}
       </nav>
 
-      {/* PRO INSIGHTS Promo */}
-      {expanded && (
-        <div className="px-6 mb-8 mt-auto">
-          <div className="bg-[#242424] border border-white/5 rounded-lg p-5">
-            <h4 className="text-white text-[13px] font-bold mb-1">PRO INSIGHTS</h4>
-            <p className="text-[#a3a3a3] text-[11px] leading-relaxed mb-4">Unlock cross-location heatmaps and AI forecasting.</p>
-            <button className="w-full py-2 bg-white text-black font-bold text-[11px] uppercase tracking-widest hover:bg-gray-200 transition-colors rounded">
-              Unlock Pro
-            </button>
-          </div>
-        </div>
-      )}
+
 
       <div className={`pb-8 flex flex-col gap-4 text-[13px] font-medium border-t border-white/5 pt-6 ${expanded ? "px-8" : "px-0 items-center"}`}>
         <Link href="#" className={`flex items-center hover:text-white transition-colors ${expanded ? "" : "justify-center"}`} title={!expanded ? "Help" : undefined}>
